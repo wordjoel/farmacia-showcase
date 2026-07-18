@@ -9,6 +9,7 @@ import {
   type AthosProduct,
 } from "./data/athos";
 import { BRANDS, type Brand } from "./data/brands";
+import { PROMO_FLYERS } from "./data/promos";
 
 type Screen =
   | "idle" | "home" | "search" | "listening" | "processing" | "result"
@@ -77,23 +78,32 @@ function IconHome({ className }: { className?: string }) {
   </svg>;
 }
 
-function IconAccessibility({ className }: { className?: string }) {
-  return <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="4.2" r="1.7" fill="currentColor" stroke="none" />
-    <path d="M11 6.2v5l-3.3 5.3M11 11.2h6M11 8.7h3.3l2.9 5.8" />
-    <circle cx="7.6" cy="17.6" r="2.5" />
-  </svg>;
-}
-
 function BrandMark({ brand, onClick }: { brand: Brand; onClick: () => void }) {
-  return <button onClick={onClick} className="flex min-w-0 items-center gap-2 rounded-2xl px-1 py-1 text-left active:scale-95">
-    <span className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br text-xl shadow-md ring-2 ring-white/70", brand.emblemBg)}>{brand.emblem}</span>
-    <span className="min-w-0 leading-none">
-      {brand.label && <span className={cn("block truncate text-[9px] font-black uppercase tracking-[0.2em]", brand.labelColor)}>{brand.label}</span>}
-      <span className={cn("block truncate text-lg font-black italic drop-shadow-sm", brand.nameColor)}>{brand.name}</span>
-      {brand.id === "generic" && <span className="block truncate text-[9px] font-bold text-blue-100/90 drop-shadow-sm">Selecionar rede ›</span>}
+  return <button onClick={onClick} className="flex min-w-0 items-center gap-1.5 rounded-2xl px-1 py-0.5 text-left active:scale-95">
+    <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br text-base shadow-md ring-2 ring-white/70", brand.emblemBg)}>{brand.emblem}</span>
+    <span className="min-w-0 leading-tight">
+      {brand.label && <span className={cn("block truncate text-[8px] font-black uppercase tracking-[0.18em]", brand.labelColor)}>{brand.label}</span>}
+      <span className={cn("block truncate text-[15px] font-black italic drop-shadow-sm", brand.nameColor)}>{brand.name}</span>
+      {brand.id === "generic" && <span className="block truncate text-[8px] font-bold text-blue-100/90 drop-shadow-sm">Selecionar rede ›</span>}
     </span>
   </button>;
+}
+
+function PromoPopup({ promo, visible, onSelect }: { promo: (typeof PROMO_FLYERS)[number]; visible: boolean; onSelect: () => void }) {
+  return <div className={cn("absolute left-3 top-[40%] z-30 w-[190px] origin-left transition-all duration-500", visible ? "slide-left opacity-100" : "pointer-events-none -translate-x-6 opacity-0")}>
+    <button onClick={onSelect} className="block w-full overflow-hidden rounded-2xl bg-white/95 text-left shadow-2xl ring-1 ring-black/5 backdrop-blur-sm transition-transform active:scale-95">
+      <div className={cn("flex items-center justify-between px-2.5 py-1 bg-gradient-to-r", promo.accent)}>
+        <span className="text-[9px] font-black uppercase tracking-wider text-white drop-shadow-sm">{promo.brand}</span>
+        <span className="rounded-full bg-white/25 px-1.5 py-0.5 text-[8px] font-black text-white">Oferta</span>
+      </div>
+      <img src={promo.image} alt={promo.name} className="h-24 w-full bg-white object-contain p-1.5"/>
+      <div className="px-2.5 pb-2.5 pt-1">
+        <p className="text-[11px] font-black leading-tight text-slate-900">{promo.name}</p>
+        <p className="mt-0.5 text-[9px] leading-snug text-slate-500">{promo.tag}</p>
+        <p className="mt-1 text-[9px] font-black text-blue-600">Ver produto ›</p>
+      </div>
+    </button>
+  </div>;
 }
 
 function BrandPicker({ open, current, onSelect, onClose }: { open: boolean; current: string; onSelect: (id: string) => void; onClose: () => void }) {
@@ -112,8 +122,15 @@ function BrandPicker({ open, current, onSelect, onClose }: { open: boolean; curr
   </div>;
 }
 
-function Header({ onHome, onBack, showBack, onAccessibility, onLanguage, lang }: { onHome: () => void; onBack: () => void; showBack: boolean; onAccessibility: () => void; onLanguage: () => void; lang: string }) {
-  return <header className="relative z-20 flex shrink-0 items-center justify-between border-b border-slate-100 bg-white px-4 py-2.5"><div>{showBack ? <button onClick={onBack} className="rounded-full bg-blue-50 px-3 py-1.5 text-[11px] font-bold text-blue-700 active:scale-95">‹ Voltar</button> : <button onClick={onHome} aria-label="Início"><Logo /></button>}</div><div className="flex items-center gap-2 text-right"><div className="hidden leading-none sm:block"><p className="text-[9px] font-semibold text-slate-400">24°C · Ensolarado</p><p className="text-[15px] font-black text-slate-900">{nowLabel()}</p></div><button onClick={onLanguage} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[10px] font-black text-blue-700 active:scale-95">{lang}</button><button onClick={onAccessibility} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[13px] active:scale-95" aria-label="Acessibilidade">♿</button></div></header>;
+function Header({ onHome, onBack, showBack, onLanguage, lang }: { onHome: () => void; onBack: () => void; showBack: boolean; onLanguage: () => void; lang: string }) {
+  return <header className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-slate-100 bg-white px-4 py-2.5">
+    <div>{showBack ? <button onClick={onBack} className="rounded-full bg-blue-50 px-3 py-1.5 text-[11px] font-bold text-blue-700 active:scale-95">‹ Voltar</button> : <button onClick={onHome} aria-label="Início"><Logo /></button>}</div>
+    <div className="text-center leading-none">
+      <p className="text-[9px] font-semibold text-slate-400">24°C · Ensolarado</p>
+      <p className="text-[15px] font-black text-slate-900">{nowLabel()}</p>
+    </div>
+    <div className="justify-self-end"><button onClick={onLanguage} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[10px] font-black text-blue-700 active:scale-95">{lang}</button></div>
+  </header>;
 }
 
 function Avatar({ listening = false, speaking = false }: { listening?: boolean; speaking?: boolean }) {
@@ -130,6 +147,10 @@ function QRCode({ size = 140 }: { size?: number }) {
   return <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} className="rounded-xl bg-white p-1">{cells.flatMap((row,y)=>row.map((active,x)=>active?<rect key={`${x}-${y}`} x={x*cell+1} y={y*cell+1} width={cell*.86} height={cell*.86} rx="1" fill="#0f2440"/>:null))}</svg>;
 }
 
+function ProductThumb({ image }: { image: string }) {
+  return image.startsWith("/") ? <img src={image} alt="" className="h-full w-full rounded-[inherit] bg-white object-contain p-1"/> : <>{image}</>;
+}
+
 function ProductCard({ product, onSelect, delay = 0 }: { product: AthosProduct; onSelect: () => void; delay?: number }) {
   const gradientMap: Record<string, string> = {
     MIP: "from-blue-500 to-cyan-400",
@@ -141,8 +162,8 @@ function ProductCard({ product, onSelect, delay = 0 }: { product: AthosProduct; 
   };
   const grad = gradientMap[product.category] || "from-blue-500 to-cyan-400";
   return <button onClick={onSelect} style={{ animationDelay: `${delay}ms` }} className="slide-up card-luxury flex w-full items-center gap-3 rounded-3xl border border-white/60 bg-white p-3.5 text-left shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50">
-    <span className={cn("grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br text-3xl text-white shadow-lg", grad)}>
-      {product.image}
+    <span className={cn("grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br text-3xl text-white shadow-lg", grad)}>
+      <ProductThumb image={product.image}/>
     </span>
     <span className="min-w-0 flex-1">
       <span className="flex flex-wrap items-center gap-1.5">
@@ -213,6 +234,8 @@ export default function App() {
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
   const [welcomeVideoOk, setWelcomeVideoOk] = useState(true);
   const [showGreeting, setShowGreeting] = useState(true);
+  const [promoIdx, setPromoIdx] = useState(0);
+  const [promoVisible, setPromoVisible] = useState(false);
   const welcomeGreetedRef = useRef(false);
   const welcomeVideoRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -236,6 +259,26 @@ export default function App() {
   };
   useEffect(() => { const t = setTimeout(()=>setShowGreeting(false), 3000); return ()=>clearTimeout(t); }, []);
   useEffect(() => {
+    if (screen !== "idle") { setPromoVisible(false); return; }
+    let cancelled = false;
+    let idx = 0;
+    let hideTimeout: ReturnType<typeof setTimeout>;
+    let nextTimeout: ReturnType<typeof setTimeout>;
+    const showNext = () => {
+      if (cancelled) return;
+      setPromoIdx(idx);
+      setPromoVisible(true);
+      hideTimeout = setTimeout(() => {
+        if (cancelled) return;
+        setPromoVisible(false);
+        idx = (idx + 1) % PROMO_FLYERS.length;
+        nextTimeout = setTimeout(showNext, 3200);
+      }, 4200);
+    };
+    const startTimeout = setTimeout(showNext, 3000);
+    return () => { cancelled = true; clearTimeout(startTimeout); clearTimeout(hideTimeout); clearTimeout(nextTimeout); };
+  }, [screen]);
+  useEffect(() => {
     if (!showWelcomeVideo || !welcomeVideoRef.current) return;
     const video = welcomeVideoRef.current;
     video.currentTime = 0;
@@ -244,6 +287,7 @@ export default function App() {
   const go = useCallback((next: Screen) => { setHistory(items => [...items.slice(-14), screen]); setScreen(next); }, [screen]);
   const back = () => setHistory(items => { const previous=items[items.length-1]; if (!previous) { setScreen("home"); return []; } setScreen(previous === "idle" ? "home" : previous); return items.slice(0,-1); });
   const openProduct = (product: AthosProduct) => { setSelected(product); go("result"); };
+  const openPromoProduct = (promo: (typeof PROMO_FLYERS)[number]) => { const product = PRODUCTS.find(item=>item.id===promo.productId); if (product) { setPromoVisible(false); openProduct(product); } };
 
   const process = useCallback((text: string) => { const intent=resolveQuery(text); if(intent.type==="product"){setSelected(intent.product);go("result");speak(`Encontrei ${intent.product.name}. ${intent.product.description}`);} if(intent.type==="list"){setResults(intent.products);setResultLabel(intent.label);go("related");speak(`Encontrei ${intent.products.length} opcoes para voce.`);} if(intent.type==="promotions"){go("promos");speak("Encontrei as melhores ofertas disponiveis hoje.");} if(intent.type==="notfound"){go("notfound");speak("Nao encontrei este produto, mas posso sugerir alternativas.");} }, [go,speak]);
 
@@ -256,8 +300,7 @@ export default function App() {
   const currentLang=["PT","EN","ES","JA","DE","IT","FR"][language]; const isDark=highContrast;
   const brand = BRANDS.find(item=>item.id===brandId) ?? BRANDS[0];
 
-  const openAccessibility = () => { setLibras(true); setAccessOpen(true); };
-  const header=screen!=="idle"?<Header onHome={()=>{setHistory([]);setScreen("home");}} onBack={back} showBack={screen!=="home"} onAccessibility={openAccessibility} onLanguage={()=>go("languages")} lang={currentLang}/>:null;
+  const header=screen!=="idle"?<Header onHome={()=>{setHistory([]);setScreen("home");}} onBack={back} showBack={screen!=="home"} onLanguage={()=>go("languages")} lang={currentLang}/>:null;
 
   return <div className={cn("flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-3 sm:p-6",isDark&&"bg-black")}>
     <div className="hidden max-w-[250px] lg:block"><span className="rounded-full bg-blue-500/20 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-blue-300">ATHOS SMART TOTEM</span><h1 className="mt-3 text-3xl font-black leading-tight text-white">Localização inteligente para o varejo.</h1><p className="mt-3 text-sm leading-relaxed text-slate-400">Produto, mapa de gôndolas, rota visual, QR/PWA e concierge humanizado em uma única experiência.</p><div className="mt-6 space-y-2 text-xs text-slate-400">{["Mapa indoor de gôndolas","Busca por voz e toque","QR Code para o celular","Acessibilidade universal","Modo demonstração"].map(item=><p key={item} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-green-400"/>{item}</p>)}</div><button onClick={runDemo} disabled={demo} className="mt-7 w-full rounded-2xl bg-blue-600 py-3 text-sm font-black text-white shadow-lg transition hover:bg-blue-500 disabled:opacity-50">{demo?"▶ Demonstração em andamento":"▶ Iniciar demo automática"}</button></div>
@@ -269,13 +312,13 @@ export default function App() {
         <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/10 to-transparent"/>
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"/>
 
-        <div className="relative z-10 grid grid-cols-[1fr_auto_1fr] items-start gap-2 px-4 py-4">
-          <div className="min-w-0"><BrandMark brand={brand} onClick={()=>setBrandPickerOpen(true)}/></div>
-          <div className="flex flex-col items-center rounded-2xl bg-white/70 px-3 py-1.5 text-center shadow-sm backdrop-blur-sm">
-            <p className="flex items-center justify-center gap-1 text-[13px] font-bold text-slate-700">24°C <span>⛅</span></p>
-            <p className="text-[13px] font-bold text-slate-700">{nowLabel()}</p>
+        <div className="relative z-10 flex justify-center pt-1">
+          <div className="flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-0.5 text-[11px] font-bold text-slate-700 shadow-sm backdrop-blur-sm">
+            <span>24°C</span><span>⛅</span><span className="text-slate-400">·</span><span>{nowLabel()}</span>
           </div>
-          <div />
+        </div>
+        <div className="relative z-10 px-3 pb-1.5 pt-1">
+          <BrandMark brand={brand} onClick={()=>setBrandPickerOpen(true)}/>
         </div>
 
         <div className="relative z-10 mt-auto flex flex-col gap-3 p-4">
@@ -283,6 +326,15 @@ export default function App() {
             <p className="text-[16px] font-black text-white drop-shadow-lg">Olá! Seja muito bem-vindo</p>
             <p className="mt-0.5 text-[12.5px] leading-snug text-white/90 drop-shadow-md">Sou seu assistente virtual e estou aqui para ajudar. Como posso auxiliar você hoje?</p>
           </div>}
+
+          <div className="grid grid-cols-3 items-center gap-2">
+            <div/>
+            <button onClick={listen} className="flex flex-col items-center gap-1 justify-self-center">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-blue-700 shadow-md active:scale-90"><IconMic className="h-4 w-4"/></span>
+              <span className="text-[9px] font-semibold text-white/85 drop-shadow-sm">Toque ou fale para começar</span>
+            </button>
+            <button onClick={()=>go("languages")} className="flex items-center gap-1.5 justify-self-end rounded-full bg-blue-900/80 px-3 py-2 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm active:scale-95"><IconGlobe className="h-4 w-4"/> Idioma</button>
+          </div>
 
           <div className="grid grid-cols-3 gap-2.5">
             <button onClick={()=>go("search")} className={cn("flex flex-col items-center justify-center gap-2 rounded-2xl py-4 text-center text-white shadow-lg transition-all active:scale-95", brand.sideButton)}>
@@ -298,16 +350,8 @@ export default function App() {
               <span className="text-[11px] font-black leading-tight">Promoções<br/>do Dia</span>
             </button>
           </div>
-
-          <div className="flex items-center justify-between gap-2">
-            <button onClick={openAccessibility} className="flex items-center gap-1.5 rounded-full bg-blue-900/80 px-3 py-2 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm active:scale-95"><IconAccessibility className="h-4 w-4"/> Acessibilidade</button>
-            <button onClick={listen} className="flex flex-col items-center gap-1">
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-blue-700 shadow-md active:scale-90"><IconMic className="h-4 w-4"/></span>
-              <span className="text-[9px] font-semibold text-white/85 drop-shadow-sm">Toque ou fale para começar</span>
-            </button>
-            <button onClick={()=>go("languages")} className="flex items-center gap-1.5 rounded-full bg-blue-900/80 px-3 py-2 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm active:scale-95"><IconGlobe className="h-4 w-4"/> Idioma</button>
-          </div>
         </div>
+        <PromoPopup promo={PROMO_FLYERS[promoIdx]} visible={promoVisible} onSelect={()=>openPromoProduct(PROMO_FLYERS[promoIdx])}/>
       </div>}
       {screen!=="idle"&&header}
       {screen!=="idle"&&<div className="relative min-h-0 flex-1 overflow-y-auto">
@@ -381,12 +425,12 @@ export default function App() {
           </div>
         </div>}
         {screen==="processing"&&<div className="flex min-h-[260px] flex-col items-center justify-center p-8 text-center"><div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600"/><p className="mt-4 text-xl font-black text-blue-900">Estou localizando as melhores informações…</p><p className="mt-2 text-sm text-slate-500">Consultando disponibilidade e rota da loja.</p></div>}
-        {screen==="result"&&<div className="p-4"><div className="scale-in overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/60"><div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-5 pb-12 text-white gradient-shift">{selected.promo&&<span className="absolute top-3 right-3 badge-bounce rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-[10px] font-black text-white ring-1 ring-white/30">{selected.promo}</span>}<div className="flex items-start gap-4"><span className="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-white/20 text-5xl backdrop-blur-sm shadow-lg ring-1 ring-white/20">{selected.image}</span><div className="min-w-0 flex-1"><p className="text-[9px] font-black uppercase tracking-[0.25em] text-blue-200">{selected.brand}</p><h2 className="mt-1 text-xl font-black leading-tight">{selected.name}</h2><p className="mt-1 text-xs text-blue-200">{selected.category}</p></div></div></div><div className="relative -mt-6 px-4"><div className="rounded-2xl bg-white p-4 shadow-xl shadow-slate-200/40 ring-1 ring-slate-100"><div className="flex items-baseline gap-3"><span className="text-3xl font-black text-emerald-600">{selected.price}</span>{selected.oldPrice&&<span className="text-sm text-slate-400 line-through">{selected.oldPrice}</span>}</div><p className="mt-3 text-sm leading-relaxed text-slate-600">{selected.description}</p></div></div><div className="px-4 pt-3 pb-4"><div className="rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 p-3.5 ring-1 ring-emerald-100"><p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-700">📍 Localizacao na loja</p><div className="mt-1.5 flex items-center gap-2">{[selected.aisle,selected.gondola,selected.shelf].map(loc=><span key={loc} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 shadow-sm">{loc}</span>)}</div><p className="mt-2 flex items-center gap-1.5 text-[11px] font-bold text-emerald-600"><span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"/> {selected.availability}</p></div></div><div className="grid grid-cols-3 gap-2.5 px-4 pb-4"><button onClick={()=>go("map")} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 py-3.5 text-white shadow-lg shadow-blue-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">🗺️</span><span className="text-[9px] font-black">Ver no mapa</span></button><button onClick={()=>{setResults(related);setResultLabel("Produtos semelhantes");go("related");}} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 py-3.5 text-white shadow-lg shadow-amber-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">✨</span><span className="text-[9px] font-black">Semelhantes</span></button><button onClick={()=>go("qr")} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 py-3.5 text-white shadow-lg shadow-purple-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">📱</span><span className="text-[9px] font-black">QR Code</span></button></div></div><p className="mt-3 rounded-2xl bg-amber-50/80 p-3 text-center text-[10px] leading-relaxed text-amber-700 ring-1 ring-amber-100">⚠️ As informacoes nao substituem orientacao medica.</p></div>}
+        {screen==="result"&&<div className="p-4"><div className="scale-in overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/60"><div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-5 pb-12 text-white gradient-shift">{selected.promo&&<span className="absolute top-3 right-3 badge-bounce rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-[10px] font-black text-white ring-1 ring-white/30">{selected.promo}</span>}<div className="flex items-start gap-4"><span className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-3xl bg-white/20 text-5xl backdrop-blur-sm shadow-lg ring-1 ring-white/20"><ProductThumb image={selected.image}/></span><div className="min-w-0 flex-1"><p className="text-[9px] font-black uppercase tracking-[0.25em] text-blue-200">{selected.brand}</p><h2 className="mt-1 text-xl font-black leading-tight">{selected.name}</h2><p className="mt-1 text-xs text-blue-200">{selected.category}</p></div></div></div><div className="relative -mt-6 px-4"><div className="rounded-2xl bg-white p-4 shadow-xl shadow-slate-200/40 ring-1 ring-slate-100"><div className="flex items-baseline gap-3"><span className="text-3xl font-black text-emerald-600">{selected.price}</span>{selected.oldPrice&&<span className="text-sm text-slate-400 line-through">{selected.oldPrice}</span>}</div><p className="mt-3 text-sm leading-relaxed text-slate-600">{selected.description}</p></div></div><div className="px-4 pt-3 pb-4"><div className="rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 p-3.5 ring-1 ring-emerald-100"><p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-700">📍 Localizacao na loja</p><div className="mt-1.5 flex items-center gap-2">{[selected.aisle,selected.gondola,selected.shelf].map(loc=><span key={loc} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 shadow-sm">{loc}</span>)}</div><p className="mt-2 flex items-center gap-1.5 text-[11px] font-bold text-emerald-600"><span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"/> {selected.availability}</p></div></div><div className="grid grid-cols-3 gap-2.5 px-4 pb-4"><button onClick={()=>go("map")} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 py-3.5 text-white shadow-lg shadow-blue-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">🗺️</span><span className="text-[9px] font-black">Ver no mapa</span></button><button onClick={()=>{setResults(related);setResultLabel("Produtos semelhantes");go("related");}} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 py-3.5 text-white shadow-lg shadow-amber-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">✨</span><span className="text-[9px] font-black">Semelhantes</span></button><button onClick={()=>go("qr")} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 py-3.5 text-white shadow-lg shadow-purple-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">📱</span><span className="text-[9px] font-black">QR Code</span></button></div></div><p className="mt-3 rounded-2xl bg-amber-50/80 p-3 text-center text-[10px] leading-relaxed text-amber-700 ring-1 ring-amber-100">⚠️ As informacoes nao substituem orientacao medica.</p></div>}
         {screen==="map"&&<div className="p-4"><div className="scale-in overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/60"><div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white"><div className="flex items-center justify-between"><div><h2 className="text-lg font-black italic">Mapa da loja</h2><p className="mt-0.5 text-[10px] text-blue-200">Rota ate {selected.name}</p></div><span className="rounded-full bg-white/20 px-3 py-1 text-[10px] font-bold backdrop-blur-sm">15 m · 2 min</span></div></div><div className="p-3"><GondolaMap selected={selected}/></div><div className="px-3 pb-3"><div className="rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 p-3.5 ring-1 ring-blue-100"><p className="text-xs font-bold leading-relaxed text-slate-700">Siga em frente por aproximadamente 15 metros. Vire a direita e siga ate o {selected.aisle}. O produto esta na {selected.gondola}, {selected.shelf}.</p></div><button onClick={()=>go("qr")} className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 py-3.5 text-sm font-black text-white shadow-lg shadow-blue-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-lg">📱</span>Continuar no celular</button></div></div></div>}
         {screen==="related"&&<div className="p-4"><div className="mb-4"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-blue-500">Resultado</p><h2 className="text-2xl font-black italic text-slate-900">{resultLabel}</h2><p className="mt-1 text-xs text-slate-500">Escolha um item para ver localizacao e rota.</p></div><div className="space-y-3">{results.map((product,index)=><ProductCard key={product.id} product={product} delay={index*70} onSelect={()=>openProduct(product)}/>)}</div></div>}
-        {screen==="promos"&&<div className="p-4"><div className="mb-4"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-500">Promocoes</p><h2 className="text-2xl font-black italic text-slate-900">Ofertas do Dia</h2><p className="mt-1 text-xs text-slate-500">Produtos selecionados com condicoes especiais.</p></div><div className="space-y-3">{PROMOTIONS.map((product,i)=><button key={product.id} onClick={()=>openProduct(product)} className="slide-up card-luxury flex w-full items-center gap-4 overflow-hidden rounded-3xl text-left shadow-lg shadow-slate-200/50" style={{animationDelay:`${i*80}ms`}}><div className="grid h-24 w-24 shrink-0 place-items-center bg-gradient-to-br from-rose-500 via-pink-500 to-fuchsia-500 text-5xl text-white shadow-inner">{product.image}</div><div className="min-w-0 flex-1 py-3 pr-4"><span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-red-500 to-rose-500 px-2 py-0.5 text-[9px] font-black text-white shadow-sm badge-bounce">{product.promo}</span><p className="mt-1.5 text-sm font-black text-slate-900">{product.name}</p><p className="mt-1 text-xl font-black text-emerald-600">{product.price}</p><p className="mt-1 flex items-center gap-1 text-[10px] font-bold text-slate-400">📍 {product.gondola}</p></div><span className="mr-3 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-50 text-sm text-slate-300">›</span></button>)}</div></div>}
+        {screen==="promos"&&<div className="p-4"><div className="mb-4"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-500">Promocoes</p><h2 className="text-2xl font-black italic text-slate-900">Ofertas do Dia</h2><p className="mt-1 text-xs text-slate-500">Produtos selecionados com condicoes especiais.</p></div><div className="space-y-3">{PROMOTIONS.map((product,i)=><button key={product.id} onClick={()=>openProduct(product)} className="slide-up card-luxury flex w-full items-center gap-4 overflow-hidden rounded-3xl text-left shadow-lg shadow-slate-200/50" style={{animationDelay:`${i*80}ms`}}><div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden bg-gradient-to-br from-rose-500 via-pink-500 to-fuchsia-500 text-5xl text-white shadow-inner"><ProductThumb image={product.image}/></div><div className="min-w-0 flex-1 py-3 pr-4"><span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-red-500 to-rose-500 px-2 py-0.5 text-[9px] font-black text-white shadow-sm badge-bounce">{product.promo}</span><p className="mt-1.5 text-sm font-black text-slate-900">{product.name}</p><p className="mt-1 text-xl font-black text-emerald-600">{product.price}</p><p className="mt-1 flex items-center gap-1 text-[10px] font-bold text-slate-400">📍 {product.gondola}</p></div><span className="mr-3 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-50 text-sm text-slate-300">›</span></button>)}</div></div>}
         {screen==="qr"&&<div className="flex flex-col items-center justify-center p-6 text-center"><div className="scale-in flex flex-col items-center"><div className="grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br from-purple-500 to-violet-600 text-4xl text-white shadow-xl shadow-purple-300/40">📱</div><p className="mt-4 text-[9px] font-black uppercase tracking-[0.3em] text-purple-500">ATHOS PWA</p><h2 className="mt-2 text-2xl font-black leading-tight text-slate-900">Continue no celular</h2><p className="mt-2 max-w-xs text-[13px] leading-relaxed text-slate-400">Aponte a camera para o QR Code. O mapa e a rota abrem de onde voce parou.</p></div><div className="mt-6 rounded-[2rem] bg-white p-5 shadow-2xl ring-4 ring-purple-100"><QRCode size={170}/></div><div className="mt-4 flex items-center justify-center gap-4 text-[10px] font-bold text-slate-400">{["Sem download","Sem login","Funciona no navegador"].map(f=><span key={f} className="flex items-center gap-1.5"><span className="h-1 w-1 rounded-full bg-emerald-400"/>{f}</span>)}</div><button onClick={()=>go("pwa")} className="mt-6 w-full max-w-xs rounded-2xl bg-gradient-to-r from-purple-600 to-violet-500 py-4 text-sm font-black text-white shadow-xl shadow-purple-300/30 transition-all active:scale-95 hover:shadow-2xl">▶ Simular abertura do PWA</button></div>}
-        {screen==="pwa"&&<div className="p-4"><div className="scale-in overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 to-violet-700 p-4 text-white shadow-xl shadow-purple-300/30 gradient-shift"><p className="text-[9px] font-black uppercase tracking-widest text-purple-200">ATHOS PWA · Sessao continuada</p><p className="mt-1 text-lg font-black">Voce esta navegando ate {selected.name}</p><p className="mt-1 text-xs text-purple-200">Sincronizado com o totem CAT-001</p></div><div className="mt-3 overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/50 ring-1 ring-slate-100"><div className="flex items-center gap-3 p-4"><span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-purple-500 to-violet-500 text-3xl text-white shadow-lg">{selected.image}</span><div><p className="font-black text-slate-900">{selected.name}</p><p className="text-xs text-slate-500">{selected.gondola} · {selected.shelf}</p></div></div><div className="px-4 pb-4"><GondolaMap selected={selected} compact/></div></div><div className="mt-3 grid grid-cols-3 gap-2.5">{[{icon:"🗺️",label:"Mapa",grad:"from-blue-500 to-cyan-400"},{icon:"❤️",label:"Favoritos",grad:"from-rose-500 to-pink-400"},{icon:"🔥",label:"Ofertas",grad:"from-amber-500 to-orange-400"}].map(b=><button key={b.label} className={cn("flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br py-3.5 text-white shadow-lg transition-all active:scale-95",b.grad)}><span className="text-xl">{b.icon}</span><span className="text-[10px] font-black">{b.label}</span></button>)}</div><button onClick={()=>go("final")} className="mt-3 w-full rounded-2xl bg-gradient-to-r from-purple-600 to-violet-500 py-3.5 text-sm font-black text-white shadow-lg shadow-purple-300/30 transition-all active:scale-95">Concluir atendimento</button></div>}
+        {screen==="pwa"&&<div className="p-4"><div className="scale-in overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 to-violet-700 p-4 text-white shadow-xl shadow-purple-300/30 gradient-shift"><p className="text-[9px] font-black uppercase tracking-widest text-purple-200">ATHOS PWA · Sessao continuada</p><p className="mt-1 text-lg font-black">Voce esta navegando ate {selected.name}</p><p className="mt-1 text-xs text-purple-200">Sincronizado com o totem CAT-001</p></div><div className="mt-3 overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/50 ring-1 ring-slate-100"><div className="flex items-center gap-3 p-4"><span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-violet-500 text-3xl text-white shadow-lg"><ProductThumb image={selected.image}/></span><div><p className="font-black text-slate-900">{selected.name}</p><p className="text-xs text-slate-500">{selected.gondola} · {selected.shelf}</p></div></div><div className="px-4 pb-4"><GondolaMap selected={selected} compact/></div></div><div className="mt-3 grid grid-cols-3 gap-2.5">{[{icon:"🗺️",label:"Mapa",grad:"from-blue-500 to-cyan-400"},{icon:"❤️",label:"Favoritos",grad:"from-rose-500 to-pink-400"},{icon:"🔥",label:"Ofertas",grad:"from-amber-500 to-orange-400"}].map(b=><button key={b.label} className={cn("flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br py-3.5 text-white shadow-lg transition-all active:scale-95",b.grad)}><span className="text-xl">{b.icon}</span><span className="text-[10px] font-black">{b.label}</span></button>)}</div><button onClick={()=>go("final")} className="mt-3 w-full rounded-2xl bg-gradient-to-r from-purple-600 to-violet-500 py-3.5 text-sm font-black text-white shadow-lg shadow-purple-300/30 transition-all active:scale-95">Concluir atendimento</button></div>}
         {screen==="notfound"&&<div className="flex min-h-[430px] flex-col items-center justify-center p-6 text-center"><div className="scale-in"><div className="grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-5xl text-white shadow-xl shadow-orange-300/40">🔎</div></div><h2 className="mt-5 text-2xl font-black text-slate-900">Nao encontrei este produto.</h2><p className="mt-2 max-w-xs text-sm text-slate-500">Posso sugerir alternativas ou chamar um colaborador.</p><div className="mt-6 grid w-full max-w-xs gap-2.5">{[{fn:()=>{setResults(PRODUCTS.slice(0,4));setResultLabel("Sugestoes para voce");go("related");},label:"Produtos semelhantes",grad:"from-blue-500 to-blue-600",icon:"✨"},{fn:()=>go("search"),label:"Nova pesquisa",grad:"from-amber-400 to-orange-500",icon:"🔎"},{fn:()=>go("collaborator"),label:"Chamar colaborador",grad:"from-emerald-500 to-teal-500",icon:"👩‍💼"}].map(b=><button key={b.label} onClick={b.fn} className={cn("flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br py-3.5 text-sm font-black text-white shadow-lg transition-all active:scale-95",b.grad)}><span>{b.icon}</span>{b.label}</button>)}</div></div>}
         {screen==="collaborator"&&<div className="p-5"><div className="scale-in overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 p-6 text-center text-white shadow-xl shadow-emerald-300/30 gradient-shift"><div className="grid h-16 w-16 mx-auto place-items-center rounded-full bg-white/20 text-4xl backdrop-blur-sm ring-1 ring-white/30">👩‍💼</div><h2 className="mt-3 text-xl font-black">Estou chamando um colaborador.</h2><p className="mt-2 text-sm text-emerald-100">Atendimento 042 foi notificado.</p><div className="mt-4 flex items-center justify-center gap-2 text-xs font-bold text-white"><span className="h-2 w-2 animate-ping rounded-full bg-white"/> Tempo estimado: menos de 2 minutos</div></div><button onClick={()=>go("home")} className="mt-4 w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-300/30 transition-all active:scale-95">Voltar ao inicio</button></div>}
         {screen==="accessibility"&&<div className="p-4"><h2 className="text-xl font-black italic text-blue-900">Acessibilidade</h2><p className="mt-1 text-xs text-slate-500">Personalize o atendimento para você.</p><div className="mt-4 space-y-2">{[{label:"♿ Libras",desc:"Intérprete digital em janela lateral",value:libras,set:setLibras},{label:"🔠 Texto ampliado",desc:"Aumenta a leitura da interface",value:largeText,set:setLargeText},{label:"◐ Alto contraste",desc:"Contraste reforçado para leitura",value:highContrast,set:setHighContrast}].map(item=><button key={item.label} onClick={()=>item.set(!item.value)} className={cn("flex w-full items-center gap-3 rounded-2xl border p-4 text-left",item.value?"border-blue-500 bg-blue-50":"border-slate-100 bg-white")}><span className="text-2xl">{item.label.split(" ")[0]}</span><span className="flex-1"><span className="block text-sm font-black text-slate-900">{item.label.slice(item.label.indexOf(" ")+1)}</span><span className="block text-[11px] text-slate-500">{item.desc}</span></span><span className={cn("h-6 w-11 rounded-full p-1 transition",item.value?"bg-green-500":"bg-slate-200")}><span className={cn("block h-4 w-4 rounded-full bg-white transition-transform",item.value&&"translate-x-5")}/></span></button>)}</div><button onClick={()=>go("home")} className="mt-5 w-full rounded-2xl bg-blue-600 py-3 text-sm font-black text-white">Salvar preferências</button></div>}
@@ -395,7 +439,7 @@ export default function App() {
         {screen==="demo"&&<div className="flex min-h-[350px] flex-col items-center justify-center p-6 text-center"><div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600"/><h2 className="mt-4 text-xl font-black text-blue-900">Demonstração em andamento</h2><p className="mt-2 text-sm text-slate-500">O ATHOS está apresentando a jornada completa automaticamente.</p></div>}
       </div>}
       {screen!=="idle"&&<Bottom brand={brand} onHome={()=>{clearTimers();setHistory([]);setScreen("home");}} onMic={listen} onSearch={()=>go("search")}/>}
-      {libras&&<div className="absolute top-16 right-3 z-30 flex flex-col items-center gap-2 rounded-2xl border border-green-400/30 bg-black/30 p-3 backdrop-blur-md transition-all duration-500"><img src="/images/libras-avatar.png" alt="Intérprete de Libras" className="h-16 w-16 rounded-xl object-cover object-top ring-2 ring-green-400/60"/><span className="text-[8px] font-black uppercase tracking-wider text-green-300">♿ LIBRAS AO VIVO</span><span className="h-2 w-2 animate-ping rounded-full bg-green-400"/></div>}
+      {libras&&<div className="absolute top-16 right-3 z-30 flex flex-col items-center gap-2 rounded-2xl border border-green-400/30 bg-black/30 p-3 backdrop-blur-md transition-all duration-500"><img src="/images/libras-avatar.png" alt="Intérprete de Libras" className={cn("h-16 w-16 rounded-xl object-cover object-top ring-2 transition-all", speaking ? "ring-green-400 shadow-lg shadow-green-400/40" : "ring-green-400/30")}/><span className={cn("text-[8px] font-black uppercase tracking-wider transition-colors", speaking ? "text-green-300" : "text-white/50")}>♿ {speaking ? "Sinalizando agora" : "Em espera"}</span><span className={cn("h-2 w-2 rounded-full bg-green-400", speaking && "animate-ping")}/></div>}
     </main></div></div>
     <div className="mt-4 lg:hidden"><button onClick={runDemo} disabled={demo} className="rounded-2xl bg-blue-600 px-7 py-3 text-sm font-black text-white shadow-lg disabled:opacity-50">{demo?"▶ Demo em andamento":"▶ Demo automática"}</button></div>
     {accessOpen&&<div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 p-4 backdrop-blur-sm" onClick={()=>setAccessOpen(false)}><div className="w-full max-w-[440px] rounded-3xl bg-white p-5 shadow-2xl" onClick={event=>event.stopPropagation()}><div className="flex items-center justify-between"><h2 className="text-lg font-black text-blue-900">Acessibilidade</h2><button onClick={()=>setAccessOpen(false)} className="text-slate-400">✕</button></div><p className="mt-1 text-xs text-slate-500">Atendimento adaptado para todos.</p><div className="mt-4 grid grid-cols-3 gap-2"><button onClick={()=>setLibras(v=>!v)} className={cn("rounded-2xl p-3 text-center text-[11px] font-bold",libras?"bg-green-600 text-white":"bg-green-50 text-green-700")}>♿<br/>Libras</button><button onClick={()=>setLargeText(v=>!v)} className={cn("rounded-2xl p-3 text-center text-[11px] font-bold",largeText?"bg-blue-600 text-white":"bg-blue-50 text-blue-700")}>🔠<br/>Texto grande</button><button onClick={()=>setHighContrast(v=>!v)} className={cn("rounded-2xl p-3 text-center text-[11px] font-bold",highContrast?"bg-slate-900 text-yellow-300":"bg-slate-100 text-slate-700")}>◐<br/>Contraste</button></div><button onClick={()=>setAccessOpen(false)} className="mt-4 w-full rounded-2xl bg-blue-600 py-3 text-sm font-black text-white">Continuar</button></div></div>}
