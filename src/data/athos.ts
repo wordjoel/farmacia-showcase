@@ -1,0 +1,288 @@
+export type Department = "MIP" | "Vitaminas" | "Higiene" | "Infantil" | "Dermocosmeticos" | "Casa";
+
+export interface AthosProduct {
+  id: string;
+  name: string;
+  brand: string;
+  image: string;
+  category: Department;
+  price: string;
+  oldPrice?: string;
+  promo?: string;
+  description: string;
+  aisle: string;
+  gondola: string;
+  shelf: string;
+  x: number;
+  y: number;
+  tags: string[];
+  availability: "Disponivel" | "Ultimas unidades";
+  related: string[];
+}
+
+export const PRODUCTS: AthosProduct[] = [
+  {
+    id: "dorflex",
+    name: "Dorflex",
+    brand: "Sanofi",
+    image: "💊",
+    category: "MIP",
+    price: "R$ 11,90",
+    oldPrice: "R$ 15,90",
+    promo: "-25%",
+    description: "Para alivio de dores musculares e dor de cabeca.",
+    aisle: "Corredor A",
+    gondola: "Gondola A04",
+    shelf: "Prateleira 3",
+    x: 240,
+    y: 150,
+    tags: ["dor", "dor de cabeca", "analgesico", "muscular", "dorflex"],
+    availability: "Disponivel",
+    related: ["neosaldina", "paracetamol", "novalgina"],
+  },
+  {
+    id: "neosaldina",
+    name: "Neosaldina",
+    brand: "Takeda",
+    image: "🟠",
+    category: "MIP",
+    price: "R$ 18,90",
+    description: "Opcao para dores de cabeca e enxaqueca.",
+    aisle: "Corredor A",
+    gondola: "Gondola A04",
+    shelf: "Prateleira 3",
+    x: 260,
+    y: 150,
+    tags: ["dor", "dor de cabeca", "enxaqueca", "analgesico", "neosaldina"],
+    availability: "Disponivel",
+    related: ["dorflex", "paracetamol"],
+  },
+  {
+    id: "paracetamol",
+    name: "Paracetamol 750mg",
+    brand: "Generico",
+    image: "🔵",
+    category: "MIP",
+    price: "R$ 6,90",
+    description: "Para dores leves e febre. Consulte a dosagem adequada.",
+    aisle: "Corredor A",
+    gondola: "Gondola A05",
+    shelf: "Prateleira 2",
+    x: 330,
+    y: 150,
+    tags: ["dor", "febre", "generico", "paracetamol"],
+    availability: "Disponivel",
+    related: ["dorflex", "novalgina"],
+  },
+  {
+    id: "novalgina",
+    name: "Novalgina",
+    brand: "Opella",
+    image: "🟢",
+    category: "MIP",
+    price: "R$ 14,90",
+    description: "Dipirona para dores e febre.",
+    aisle: "Corredor A",
+    gondola: "Gondola A05",
+    shelf: "Prateleira 3",
+    x: 350,
+    y: 150,
+    tags: ["dor", "febre", "dipirona", "novalgina"],
+    availability: "Ultimas unidades",
+    related: ["dorflex", "paracetamol"],
+  },
+  {
+    id: "vitamina-c",
+    name: "Vitamina C 1g",
+    brand: "Catarina Care",
+    image: "🍊",
+    category: "Vitaminas",
+    price: "R$ 24,90",
+    oldPrice: "R$ 39,90",
+    promo: "-38%",
+    description: "Suplemento antioxidante para suporte da imunidade.",
+    aisle: "Corredor B",
+    gondola: "Gondola B12",
+    shelf: "Prateleira 1",
+    x: 510,
+    y: 150,
+    tags: ["vitamina", "vitamina c", "imunidade", "gripe"],
+    availability: "Disponivel",
+    related: ["vitamina-d", "omega-3"],
+  },
+  {
+    id: "vitamina-d",
+    name: "Vitamina D 2000UI",
+    brand: "Catarina Care",
+    image: "☀️",
+    category: "Vitaminas",
+    price: "R$ 34,90",
+    description: "Suporte para ossos, musculos e sistema imune.",
+    aisle: "Corredor B",
+    gondola: "Gondola B12",
+    shelf: "Prateleira 2",
+    x: 530,
+    y: 150,
+    tags: ["vitamina", "vitamina d", "ossos", "imunidade"],
+    availability: "Disponivel",
+    related: ["vitamina-c", "omega-3"],
+  },
+  {
+    id: "omega-3",
+    name: "Omega 3 60 capsulas",
+    brand: "Essential",
+    image: "🐟",
+    category: "Vitaminas",
+    price: "R$ 39,90",
+    oldPrice: "R$ 59,90",
+    promo: "-33%",
+    description: "Suplemento para saude cardiovascular e cerebral.",
+    aisle: "Corredor B",
+    gondola: "Gondola B13",
+    shelf: "Prateleira 1",
+    x: 590,
+    y: 150,
+    tags: ["omega", "omega 3", "suplemento", "coracao"],
+    availability: "Disponivel",
+    related: ["vitamina-c", "vitamina-d"],
+  },
+  {
+    id: "fralda-g",
+    name: "Fralda Premium G 64un",
+    brand: "Baby Joy",
+    image: "👶",
+    category: "Infantil",
+    price: "R$ 69,90",
+    oldPrice: "R$ 99,90",
+    promo: "-30%",
+    description: "Protecao por ate 12 horas com toque suave.",
+    aisle: "Corredor C",
+    gondola: "Gondola C08",
+    shelf: "Prateleira 1",
+    x: 760,
+    y: 150,
+    tags: ["fralda", "bebe", "infantil", "crianca"],
+    availability: "Disponivel",
+    related: ["lencos", "pomada"],
+  },
+  {
+    id: "lencos",
+    name: "Lencos Umedecidos 96un",
+    brand: "Baby Joy",
+    image: "🧻",
+    category: "Infantil",
+    price: "R$ 18,90",
+    description: "Limpeza delicada sem alcool e sem perfume.",
+    aisle: "Corredor C",
+    gondola: "Gondola C08",
+    shelf: "Prateleira 2",
+    x: 790,
+    y: 150,
+    tags: ["lenco", "bebe", "infantil"],
+    availability: "Disponivel",
+    related: ["fralda-g", "pomada"],
+  },
+  {
+    id: "protetor-solar",
+    name: "Protetor Solar FPS 60",
+    brand: "Derma+",
+    image: "🌞",
+    category: "Dermocosmeticos",
+    price: "R$ 54,90",
+    oldPrice: "R$ 79,90",
+    promo: "-31%",
+    description: "Alta protecao UVA e UVB com toque seco.",
+    aisle: "Corredor D",
+    gondola: "Gondola D02",
+    shelf: "Prateleira 2",
+    x: 230,
+    y: 350,
+    tags: ["protetor", "solar", "pele", "fps"],
+    availability: "Disponivel",
+    related: ["hidratante"],
+  },
+  {
+    id: "hidratante",
+    name: "Hidratante Facial Vitamina C",
+    brand: "Derma+",
+    image: "✨",
+    category: "Dermocosmeticos",
+    price: "R$ 49,90",
+    description: "Hidratacao profunda com efeito iluminador.",
+    aisle: "Corredor D",
+    gondola: "Gondola D02",
+    shelf: "Prateleira 1",
+    x: 280,
+    y: 350,
+    tags: ["hidratante", "facial", "pele", "rosto"],
+    availability: "Disponivel",
+    related: ["protetor-solar"],
+  },
+  {
+    id: "racao-premium",
+    name: "Racao Premium Adultos 10kg",
+    brand: "PetLife",
+    image: "🐶",
+    category: "Casa",
+    price: "R$ 119,90",
+    description: "Nutricao completa para caes adultos.",
+    aisle: "Corredor E",
+    gondola: "Gondola E05",
+    shelf: "Prateleira 1",
+    x: 700,
+    y: 350,
+    tags: ["racao", "pet", "cachorro", "animal"],
+    availability: "Disponivel",
+    related: [],
+  },
+];
+
+export const PROMOTIONS = PRODUCTS.filter((product) => product.promo);
+
+export const CATEGORIES = [
+  { id: "MIP" as Department, label: "Medicamentos MIP", icon: "💊" },
+  { id: "Vitaminas" as Department, label: "Vitaminas", icon: "🍊" },
+  { id: "Higiene" as Department, label: "Higiene", icon: "🧴" },
+  { id: "Infantil" as Department, label: "Infantil", icon: "👶" },
+  { id: "Dermocosmeticos" as Department, label: "Dermocosmeticos", icon: "✨" },
+  { id: "Casa" as Department, label: "Casa e Pet", icon: "🐶" },
+];
+
+export const ADS = [
+  { title: "Semana da Saude", text: "Cuide de voce com ofertas especiais.", icon: "💙", tone: "blue" },
+  { title: "Vitamina C em oferta", text: "Mais imunidade para sua rotina.", icon: "🍊", tone: "green" },
+  { title: "Cuidar faz bem", text: "Encontre tudo para sua familia.", icon: "💚", tone: "blue" },
+];
+
+const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+export type Intent =
+  | { type: "product"; product: AthosProduct }
+  | { type: "list"; label: string; products: AthosProduct[] }
+  | { type: "promotions" }
+  | { type: "notfound"; query: string };
+
+export function resolveQuery(query: string): Intent {
+  const normalized = normalize(query.trim());
+  if (!normalized) return { type: "notfound", query };
+  if (/(promoc|oferta|desconto|barato)/.test(normalized)) return { type: "promotions" };
+
+  const direct = PRODUCTS.find((product) =>
+    !product.id.includes("rivotril") &&
+    (normalized.includes(normalize(product.id)) || normalized.includes(normalize(product.name.split(" ")[0]))),
+  );
+  if (direct) return { type: "product", product: direct };
+
+  const matched = PRODUCTS.filter((product) =>
+    product.tags.some((tag) => normalized.includes(normalize(tag)) || normalize(tag).includes(normalized)),
+  );
+  if (matched.length === 1) return { type: "product", product: matched[0] };
+  if (matched.length > 1) {
+    return {
+      type: "list",
+      label: normalized.includes("vitamina") ? "Vitaminas" : normalized.includes("fralda") ? "Infantil" : "Resultados para sua busca",
+      products: matched,
+    };
+  }
+  return { type: "notfound", query };
+}
