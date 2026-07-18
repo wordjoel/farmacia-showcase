@@ -23,10 +23,6 @@ const WELCOME_TEXT = "Olá! Seja muito bem-vindo. Sou seu assistente virtual. Po
 function cn(...values: (string | false | null | undefined)[]) { return values.filter(Boolean).join(" "); }
 function nowLabel() { return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }); }
 
-function Logo() {
-  return <div className="flex items-center gap-2"><div className="grid h-9 w-9 place-items-center rounded-full bg-blue-600 text-xl text-white shadow-md">A</div><div className="leading-none"><p className="text-[9px] font-black uppercase tracking-[0.28em] text-blue-700">ATHOS</p><p className="text-[15px] font-black italic text-slate-900">Smart Totem</p></div></div>;
-}
-
 function IconMedSearch({ className }: { className?: string }) {
   return <svg viewBox="0 0 28 28" className={className} fill="none">
     <g transform="translate(1,7) rotate(-24 8 5)">
@@ -59,14 +55,6 @@ function IconMic({ className }: { className?: string }) {
     <path d="M5 10a7 7 0 0 0 14 0" />
     <line x1="12" y1="19" x2="12" y2="22" />
     <line x1="8" y1="22" x2="16" y2="22" />
-  </svg>;
-}
-
-function IconGlobe({ className }: { className?: string }) {
-  return <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="9" />
-    <line x1="3" y1="12" x2="21" y2="12" />
-    <path d="M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9Z" />
   </svg>;
 }
 
@@ -122,9 +110,9 @@ function BrandPicker({ open, current, onSelect, onClose }: { open: boolean; curr
   </div>;
 }
 
-function Header({ onHome, onBack, showBack, onLanguage, lang }: { onHome: () => void; onBack: () => void; showBack: boolean; onLanguage: () => void; lang: string }) {
+function Header({ brand, onHome, onBack, showBack, onLanguage, lang }: { brand: Brand; onHome: () => void; onBack: () => void; showBack: boolean; onLanguage: () => void; lang: string }) {
   return <header className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-slate-100 bg-white px-4 py-2.5">
-    <div>{showBack ? <button onClick={onBack} className="rounded-full bg-blue-50 px-3 py-1.5 text-[11px] font-bold text-blue-700 active:scale-95">‹ Voltar</button> : <button onClick={onHome} aria-label="Início"><Logo /></button>}</div>
+    <div>{showBack ? <button onClick={onBack} className="rounded-full bg-blue-50 px-3 py-1.5 text-[11px] font-bold text-blue-700 active:scale-95">‹ Voltar</button> : <BrandMark brand={brand} onClick={onHome}/>}</div>
     <div className="text-center leading-none">
       <p className="text-[9px] font-semibold text-slate-400">24°C · Ensolarado</p>
       <p className="text-[15px] font-black text-slate-900">{nowLabel()}</p>
@@ -187,28 +175,28 @@ function ProductCard({ product, onSelect, delay = 0 }: { product: AthosProduct; 
 }
 
 function Bottom({ brand, onHome, onMic, onSearch }: { brand: Brand; onHome: () => void; onMic: () => void; onSearch: () => void }) {
-  return <footer className={cn("shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]", brand.sideButton)}>
-    <div className="grid grid-cols-3 gap-1 p-2">
-      <button onClick={onMic} className="flex flex-col items-center gap-1.5 rounded-2xl py-3 text-[9px] font-black text-white/90 transition-all active:scale-90 hover:bg-white/10">
-        <span className={cn("grid h-11 w-11 place-items-center rounded-2xl text-white shadow-lg transition-all group-hover:scale-110", brand.micButton)}><IconMic className="h-5 w-5"/></span>
-        <span className="tracking-wide drop-shadow-sm">Fale</span>
+  return <footer className="shrink-0 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+    <div className="grid grid-cols-3 gap-2.5 p-3">
+      <button onClick={onMic} className={cn("flex flex-col items-center justify-center gap-2 rounded-2xl py-4 text-center text-white shadow-lg transition-all active:scale-95", brand.micButton)}>
+        <IconMic className="h-8 w-8"/>
+        <span className="text-[11px] font-black leading-tight">Fale</span>
       </button>
-      <button onClick={onSearch} className="flex flex-col items-center gap-1.5 rounded-2xl py-3 text-[9px] font-black text-white/90 transition-all active:scale-90 hover:bg-white/10">
-        <span className={cn("grid h-11 w-11 place-items-center rounded-2xl text-white shadow-lg transition-all group-hover:scale-110", brand.accentButton)}><IconPin className="h-5 w-5"/></span>
-        <span className="tracking-wide drop-shadow-sm">Encontrar</span>
+      <button onClick={onSearch} className={cn("flex flex-col items-center justify-center gap-2 rounded-2xl py-4 text-center text-white shadow-lg transition-all active:scale-95", brand.accentButton)}>
+        <IconPin className="h-8 w-8"/>
+        <span className="text-[11px] font-black leading-tight">Encontrar</span>
       </button>
-      <button onClick={onHome} className="flex flex-col items-center gap-1.5 rounded-2xl py-3 text-[9px] font-black text-white/90 transition-all active:scale-90 hover:bg-white/10">
-        <span className={cn("grid h-11 w-11 place-items-center rounded-2xl text-white shadow-lg transition-all group-hover:scale-110", brand.micButton)}><IconHome className="h-5 w-5"/></span>
-        <span className="tracking-wide drop-shadow-sm">Início</span>
+      <button onClick={onHome} className={cn("flex flex-col items-center justify-center gap-2 rounded-2xl py-4 text-center text-white shadow-lg transition-all active:scale-95", brand.sideButton)}>
+        <IconHome className="h-8 w-8"/>
+        <span className="text-[11px] font-black leading-tight">Início</span>
       </button>
     </div>
-    <div className="flex items-center justify-between border-t border-white/15 bg-black/10 px-4 py-1.5">
+    <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-4 py-1.5">
       <div className="flex items-center gap-2">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse"/>
-        <span className="text-[8px] font-semibold text-white/60 uppercase tracking-wider">Totem ATivo</span>
+        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"/>
+        <span className="text-[8px] font-semibold text-slate-400 uppercase tracking-wider">Totem ATivo</span>
       </div>
-      <span className="text-[8px] text-white/50">CAT-001</span>
-      <span className="text-[8px] text-white/50">{nowLabel()}</span>
+      <span className="text-[8px] text-slate-400">CAT-001</span>
+      <span className="text-[8px] text-slate-400">{nowLabel()}</span>
     </div>
   </footer>;
 }
@@ -300,11 +288,11 @@ export default function App() {
   const currentLang=["PT","EN","ES","JA","DE","IT","FR"][language]; const isDark=highContrast;
   const brand = BRANDS.find(item=>item.id===brandId) ?? BRANDS[0];
 
-  const header=screen!=="idle"?<Header onHome={()=>{setHistory([]);setScreen("home");}} onBack={back} showBack={screen!=="home"} onLanguage={()=>go("languages")} lang={currentLang}/>:null;
+  const header=screen!=="idle"?<Header brand={brand} onHome={()=>{setHistory([]);setScreen("home");}} onBack={back} showBack={screen!=="home"} onLanguage={()=>go("languages")} lang={currentLang}/>:null;
 
-  return <div className={cn("flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-3 sm:p-6",isDark&&"bg-black")}>
+  return <div className={cn("flex min-h-dvh items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 lg:p-6",isDark&&"bg-black")}>
     <div className="hidden max-w-[250px] lg:block"><span className="rounded-full bg-blue-500/20 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-blue-300">ATHOS SMART TOTEM</span><h1 className="mt-3 text-3xl font-black leading-tight text-white">Localização inteligente para o varejo.</h1><p className="mt-3 text-sm leading-relaxed text-slate-400">Produto, mapa de gôndolas, rota visual, QR/PWA e concierge humanizado em uma única experiência.</p><div className="mt-6 space-y-2 text-xs text-slate-400">{["Mapa indoor de gôndolas","Busca por voz e toque","QR Code para o celular","Acessibilidade universal","Modo demonstração"].map(item=><p key={item} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-green-400"/>{item}</p>)}</div><button onClick={runDemo} disabled={demo} className="mt-7 w-full rounded-2xl bg-blue-600 py-3 text-sm font-black text-white shadow-lg transition hover:bg-blue-500 disabled:opacity-50">{demo?"▶ Demonstração em andamento":"▶ Iniciar demo automática"}</button></div>
-    <div className="w-full max-w-[460px]"><div className="rounded-[2.5rem] bg-slate-800 p-2.5 shadow-2xl ring-1 ring-white/10"><main className={cn("relative flex h-[min(90vh,860px)] min-h-[680px] flex-col overflow-hidden rounded-[2rem] bg-white",isDark&&"bg-black text-yellow-300")}>
+    <div className="h-dvh w-full lg:h-auto lg:max-w-[460px]"><div className="h-full lg:rounded-[2.5rem] lg:bg-slate-800 lg:p-2.5 lg:shadow-2xl lg:ring-1 lg:ring-white/10"><main className={cn("relative flex h-full flex-col overflow-hidden bg-white lg:h-[min(90vh,860px)] lg:min-h-[680px] lg:rounded-[2rem]",isDark&&"bg-black text-yellow-300")}>
       {screen==="idle"&&<div className="relative flex h-full flex-col overflow-hidden bg-blue-950" onClickCapture={triggerWelcome}>
         {showWelcomeVideo && welcomeVideoOk
           ? <video ref={welcomeVideoRef} src="/videos/avatar-welcome.mp4" playsInline className="absolute inset-0 h-full w-full object-cover object-top" onError={()=>{setWelcomeVideoOk(false);setShowWelcomeVideo(false);speak(WELCOME_TEXT);}} onEnded={()=>setShowWelcomeVideo(false)}/>
@@ -312,13 +300,12 @@ export default function App() {
         <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/10 to-transparent"/>
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"/>
 
-        <div className="relative z-10 flex justify-center pt-1">
+        <div className="relative z-10 grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pb-1.5 pt-2">
+          <div className="min-w-0"><BrandMark brand={brand} onClick={()=>setBrandPickerOpen(true)}/></div>
           <div className="flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-0.5 text-[11px] font-bold text-slate-700 shadow-sm backdrop-blur-sm">
             <span>24°C</span><span>⛅</span><span className="text-slate-400">·</span><span>{nowLabel()}</span>
           </div>
-        </div>
-        <div className="relative z-10 px-3 pb-1.5 pt-1">
-          <BrandMark brand={brand} onClick={()=>setBrandPickerOpen(true)}/>
+          <div className="justify-self-end"><button onClick={()=>go("languages")} className="rounded-full bg-white/70 px-2.5 py-1.5 text-[11px] font-black text-blue-700 shadow-sm backdrop-blur-sm active:scale-95">{currentLang}</button></div>
         </div>
 
         <div className="relative z-10 mt-auto flex flex-col gap-3 p-4">
@@ -327,13 +314,11 @@ export default function App() {
             <p className="mt-0.5 text-[12.5px] leading-snug text-white/90 drop-shadow-md">Sou seu assistente virtual e estou aqui para ajudar. Como posso auxiliar você hoje?</p>
           </div>}
 
-          <div className="grid grid-cols-3 items-center gap-2">
-            <div/>
-            <button onClick={listen} className="flex flex-col items-center gap-1 justify-self-center">
+          <div className="flex justify-center">
+            <button onClick={listen} className="flex flex-col items-center gap-1">
               <span className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-blue-700 shadow-md active:scale-90"><IconMic className="h-4 w-4"/></span>
               <span className="text-[9px] font-semibold text-white/85 drop-shadow-sm">Toque ou fale para começar</span>
             </button>
-            <button onClick={()=>go("languages")} className="flex items-center gap-1.5 justify-self-end rounded-full bg-blue-900/80 px-3 py-2 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm active:scale-95"><IconGlobe className="h-4 w-4"/> Idioma</button>
           </div>
 
           <div className="grid grid-cols-3 gap-2.5">
@@ -425,7 +410,7 @@ export default function App() {
           </div>
         </div>}
         {screen==="processing"&&<div className="flex min-h-[260px] flex-col items-center justify-center p-8 text-center"><div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600"/><p className="mt-4 text-xl font-black text-blue-900">Estou localizando as melhores informações…</p><p className="mt-2 text-sm text-slate-500">Consultando disponibilidade e rota da loja.</p></div>}
-        {screen==="result"&&<div className="p-4"><div className="scale-in overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/60"><div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-5 pb-12 text-white gradient-shift">{selected.promo&&<span className="absolute top-3 right-3 badge-bounce rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-[10px] font-black text-white ring-1 ring-white/30">{selected.promo}</span>}<div className="flex items-start gap-4"><span className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-3xl bg-white/20 text-5xl backdrop-blur-sm shadow-lg ring-1 ring-white/20"><ProductThumb image={selected.image}/></span><div className="min-w-0 flex-1"><p className="text-[9px] font-black uppercase tracking-[0.25em] text-blue-200">{selected.brand}</p><h2 className="mt-1 text-xl font-black leading-tight">{selected.name}</h2><p className="mt-1 text-xs text-blue-200">{selected.category}</p></div></div></div><div className="relative -mt-6 px-4"><div className="rounded-2xl bg-white p-4 shadow-xl shadow-slate-200/40 ring-1 ring-slate-100"><div className="flex items-baseline gap-3"><span className="text-3xl font-black text-emerald-600">{selected.price}</span>{selected.oldPrice&&<span className="text-sm text-slate-400 line-through">{selected.oldPrice}</span>}</div><p className="mt-3 text-sm leading-relaxed text-slate-600">{selected.description}</p></div></div><div className="px-4 pt-3 pb-4"><div className="rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 p-3.5 ring-1 ring-emerald-100"><p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-700">📍 Localizacao na loja</p><div className="mt-1.5 flex items-center gap-2">{[selected.aisle,selected.gondola,selected.shelf].map(loc=><span key={loc} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 shadow-sm">{loc}</span>)}</div><p className="mt-2 flex items-center gap-1.5 text-[11px] font-bold text-emerald-600"><span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"/> {selected.availability}</p></div></div><div className="grid grid-cols-3 gap-2.5 px-4 pb-4"><button onClick={()=>go("map")} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 py-3.5 text-white shadow-lg shadow-blue-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">🗺️</span><span className="text-[9px] font-black">Ver no mapa</span></button><button onClick={()=>{setResults(related);setResultLabel("Produtos semelhantes");go("related");}} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 py-3.5 text-white shadow-lg shadow-amber-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">✨</span><span className="text-[9px] font-black">Semelhantes</span></button><button onClick={()=>go("qr")} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 py-3.5 text-white shadow-lg shadow-purple-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">📱</span><span className="text-[9px] font-black">QR Code</span></button></div></div><p className="mt-3 rounded-2xl bg-amber-50/80 p-3 text-center text-[10px] leading-relaxed text-amber-700 ring-1 ring-amber-100">⚠️ As informacoes nao substituem orientacao medica.</p></div>}
+        {screen==="result"&&<div className="p-4"><div className="scale-in overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/60"><div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-5 pb-12 text-white gradient-shift">{selected.promo&&<span className="absolute top-3 right-3 badge-bounce rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-[10px] font-black text-white ring-1 ring-white/30">{selected.promo}</span>}<div className="flex items-start gap-4"><span className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-3xl bg-white/20 text-5xl backdrop-blur-sm shadow-lg ring-1 ring-white/20"><ProductThumb image={selected.image}/></span><div className="min-w-0 flex-1"><p className="text-[9px] font-black uppercase tracking-[0.25em] text-blue-200">{selected.brand}</p><h2 className="mt-1 text-xl font-black leading-tight">{selected.name}</h2><p className="mt-1 text-xs text-blue-200">{selected.category}</p></div></div></div><div className="relative -mt-6 px-4"><div className="rounded-2xl bg-white p-4 shadow-xl shadow-slate-200/40 ring-1 ring-slate-100"><div className="flex items-baseline gap-3"><span className="text-3xl font-black text-emerald-600">{selected.price}</span>{selected.oldPrice&&<span className="text-sm text-slate-400 line-through">{selected.oldPrice}</span>}</div><p className="mt-3 text-sm leading-relaxed text-slate-600">{selected.description}</p></div></div><div className="px-4 pt-3"><div className="rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 p-3.5 ring-1 ring-emerald-100"><p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-700">📍 Localizacao na loja</p><div className="mt-1.5 flex items-center gap-2">{[selected.aisle,selected.gondola,selected.shelf].map(loc=><span key={loc} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 shadow-sm">{loc}</span>)}</div><p className="mt-2 flex items-center gap-1.5 text-[11px] font-bold text-emerald-600"><span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"/> {selected.availability}</p></div><p className="mt-3 rounded-2xl bg-amber-50/80 p-3 text-center text-[10px] leading-relaxed text-amber-700 ring-1 ring-amber-100">⚠️ As informacoes nao substituem orientacao medica.</p></div><div className="grid grid-cols-3 gap-2.5 p-4"><button onClick={()=>go("map")} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 py-3.5 text-white shadow-lg shadow-blue-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">🗺️</span><span className="text-[9px] font-black">Ver no mapa</span></button><button onClick={()=>{setResults(related);setResultLabel("Produtos semelhantes");go("related");}} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 py-3.5 text-white shadow-lg shadow-amber-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">✨</span><span className="text-[9px] font-black">Semelhantes</span></button><button onClick={()=>go("qr")} className="flex flex-col items-center gap-1.5 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 py-3.5 text-white shadow-lg shadow-purple-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-xl">📱</span><span className="text-[9px] font-black">QR Code</span></button></div></div></div>}
         {screen==="map"&&<div className="p-4"><div className="scale-in overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/60"><div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white"><div className="flex items-center justify-between"><div><h2 className="text-lg font-black italic">Mapa da loja</h2><p className="mt-0.5 text-[10px] text-blue-200">Rota ate {selected.name}</p></div><span className="rounded-full bg-white/20 px-3 py-1 text-[10px] font-bold backdrop-blur-sm">15 m · 2 min</span></div></div><div className="p-3"><GondolaMap selected={selected}/></div><div className="px-3 pb-3"><div className="rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 p-3.5 ring-1 ring-blue-100"><p className="text-xs font-bold leading-relaxed text-slate-700">Siga em frente por aproximadamente 15 metros. Vire a direita e siga ate o {selected.aisle}. O produto esta na {selected.gondola}, {selected.shelf}.</p></div><button onClick={()=>go("qr")} className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 py-3.5 text-sm font-black text-white shadow-lg shadow-blue-300/40 transition-all active:scale-95 hover:shadow-xl"><span className="text-lg">📱</span>Continuar no celular</button></div></div></div>}
         {screen==="related"&&<div className="p-4"><div className="mb-4"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-blue-500">Resultado</p><h2 className="text-2xl font-black italic text-slate-900">{resultLabel}</h2><p className="mt-1 text-xs text-slate-500">Escolha um item para ver localizacao e rota.</p></div><div className="space-y-3">{results.map((product,index)=><ProductCard key={product.id} product={product} delay={index*70} onSelect={()=>openProduct(product)}/>)}</div></div>}
         {screen==="promos"&&<div className="p-4"><div className="mb-4"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-500">Promocoes</p><h2 className="text-2xl font-black italic text-slate-900">Ofertas do Dia</h2><p className="mt-1 text-xs text-slate-500">Produtos selecionados com condicoes especiais.</p></div><div className="space-y-3">{PROMOTIONS.map((product,i)=><button key={product.id} onClick={()=>openProduct(product)} className="slide-up card-luxury flex w-full items-center gap-4 overflow-hidden rounded-3xl text-left shadow-lg shadow-slate-200/50" style={{animationDelay:`${i*80}ms`}}><div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden bg-gradient-to-br from-rose-500 via-pink-500 to-fuchsia-500 text-5xl text-white shadow-inner"><ProductThumb image={product.image}/></div><div className="min-w-0 flex-1 py-3 pr-4"><span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-red-500 to-rose-500 px-2 py-0.5 text-[9px] font-black text-white shadow-sm badge-bounce">{product.promo}</span><p className="mt-1.5 text-sm font-black text-slate-900">{product.name}</p><p className="mt-1 text-xl font-black text-emerald-600">{product.price}</p><p className="mt-1 flex items-center gap-1 text-[10px] font-bold text-slate-400">📍 {product.gondola}</p></div><span className="mr-3 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-50 text-sm text-slate-300">›</span></button>)}</div></div>}
